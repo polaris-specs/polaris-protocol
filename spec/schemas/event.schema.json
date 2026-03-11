@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/polaris-specs/polaris-protocol/main/spec/schemas/event.schema.json",
+  "title": "Polaris Event",
+  "description": "Canonical event structure for Polaris. This schema is normative. All compliant implementations MUST conform to this structure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "event_type",
+    "canonical_encoding_version",
+    "canonical_pointer_ref",
+    "context",
+    "candidate_payload",
+    "authority_signature"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hex-encoded SHA-256 digest of the canonical encoding of this event. Serves as the stable unique identifier and enables canonical pointer referencing."
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "psto",
+        "validation_artifact",
+        "commit_record",
+        "execution_request",
+        "execution_receipt"
+      ],
+      "description": "Normative Polaris event category. Determines which payload fields are authoritative."
+    },
+    "canonical_encoding_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Version tag for the canonical encoding rules applied to this event. MUST be '1.0.0' for this version of the specification."
+    },
+    "canonical_pointer_ref": {
+      "description": "Hex-encoded SHA-256 digest of the immediate causal predecessor event. MUST be null only for genesis events.",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "context": {
+      "type": "object",
+      "description": "Deterministic execution context required for validation and replay. All fields are normative.",
+      "additionalProperties": false,
+      "required": [
+        "timestamp",
+        "agent_id",
+        "sequence"
+      ],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 UTC timestamp of event creation. MUST include timezone designator Z."
+        },
+        "agent_id": {
+          "type": "string",
+          "description": "Canonical identifier for the agent, system, or authority that produced this event."
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Monotonic sequence number local to agent_id. MUST increment by 1 for each successive event. Used for deterministic replay ordering."
+        },
+        "contextual_tags": {
+          "type": "object",
+          "description": "Optional structured metadata for policy and execution context. Non-normative for causal binding.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "candidate_payload": {
+      "type": "object",
+      "description": "Candidate execution or state-transition payload. Canonical encoding rules determine serialization for hashing. Intentionally extensible.",
+      "additionalProperties": true
+    },
+    "action_payload": {
+      "type": "object",
+      "description": "Optional action-specific payload for execution_request and execution_receipt event types. Intentionally extensible.",
+      "additionalProperties": true
+    },
+    "authority_signature": {
+      "type": "object",
+      "description": "Primary normative attestation over the canonical encoding of this event. Required for all event types regardless of authority role.",
+      "additionalProperties": false,
+      "required": [
+        "signer",
+        "signature_scheme",
+        "signature"
+      ],
+      "properties": {
+        "signer": {
+          "type": "string",
+          "description": "Canonical identifier of the signing authority."
+        },
+        "signature_scheme": {
+          "type": "string",
+          "enum": ["ed25519"],
+          "description": "Normative algorithm identifier. MUST be 'ed25519' for this version of the specification."
+        },
+        "signature": {
+          "type": "string",
+          "description": "Base64-encoded signature over the canonical encoding of this event."
+        }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "description": "Optional additional attestations supporting multi-authority validation. Supplements authority_signature; does not replace it.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signer",
+          "signature_scheme",
+          "signature"
+        ],
+        "properties": {
+          "signer": {
+            "type": "string"
+          },
+          "signature_scheme": {
+            "type": "string",
+            "enum": ["ed25519"]
+          },
+          "signature": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "validation_proof": {
+      "type": ["object", "null"],
+      "description": "Optional structured proof object produced by a validator. Used by verification_model for gate-profile attestation. Not required for causal binding.",
+      "additionalProperties": true
+    }
+  }
+}
