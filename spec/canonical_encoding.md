@@ -23,14 +23,12 @@ Events carrying an unknown `canonical_encoding_version` MUST be rejected.
 
 ## Purpose
 
-Polaris uses deterministic canonical encoding to ensure that semantically
-equivalent state transition objects produce identical encoded representations,
-hashes, validation outcomes, and replay results across compliant implementations.
+Deterministic canonical encoding ensures that semantically equivalent state
+transition objects produce identical byte sequences, hashes, validation
+outcomes, and replay results across all compliant implementations.
 
-Canonical encoding is not an optional serialization preference. It is a
-structural requirement of the Polaris architecture. A proposed state transition
-object is eligible for validation only if it can be normalized into canonical
-form and hashed under the rules defined in this document.
+A proposed state transition object is eligible for validation only if it
+normalizes into canonical form under the rules defined in this document.
 
 ---
 
@@ -44,19 +42,21 @@ described in RFC 2119.
 
 ## Architectural Role
 
-Canonical encoding serves five functions within the Polaris enforcement boundary:
+Canonical encoding enforces the following constraints within the enforcement
+boundary:
 
-1. It prevents representation ambiguity.
-2. It ensures deterministic hash derivation.
-3. It binds validation artifacts to a stable transition representation.
-4. It enables independent replay and verification across implementations.
-5. It prevents semantically identical transition objects from producing
-   divergent canonical state outcomes.
+1. Representation ambiguity cannot occur.
+2. Hash derivation is deterministic.
+3. Validation artifacts are bound to a stable transition representation.
+4. Independent replay and verification produce identical results across
+   implementations.
+5. Semantically identical transition objects cannot produce divergent
+   canonical state outcomes.
 
 Canonical encoding is upstream of validation and upstream of commit. If
 canonical encoding fails, validation MUST fail. If validation fails, commit
-MUST NOT occur. If commit does not occur, no canonical pointer advancement and
-no execution enablement are possible.
+MUST NOT occur. If commit does not occur, no canonical state advancement
+and no execution are possible.
 
 ---
 
@@ -70,10 +70,9 @@ Canonical encoding applies to:
 - Execution requests
 - Execution receipts
 
-This document focuses primarily on PSTO canonical encoding because it defines
-the root transition object from which validation, commitment, and execution
-eligibility are derived. All other event types derive their canonical encoding
-requirements by extension of the same rules.
+All event types derive their canonical encoding requirements from the same
+rules. PSTO encoding is primary because it defines the root transition object
+from which validation, commitment, and execution eligibility are derived.
 
 ---
 
@@ -183,8 +182,8 @@ Optional fields (`context.contextual_tags`, `action_payload`,
 `validation_proof`) MUST use deterministic empty encodings when absent.
 
 Silent omission is NOT canonical unless the enclosing structure explicitly
-defines a canonical absence rule. Where two implementations would produce
-different byte sequences for the same absent optional field, the encoding is
+defines a canonical absence rule. Where two implementations produce different
+byte sequences for the same absent optional field, the encoding is
 non-compliant.
 
 ---
@@ -241,11 +240,11 @@ MUST NOT repair or reinterpret a non-canonical transition representation.
 
 ## Cross-Implementation Determinism
 
-Cross-implementation determinism is a first-class Polaris requirement.
+Cross-implementation determinism is required. Internal consistency alone is
+not sufficient for compliance.
 
-An implementation is not compliant merely because it is internally consistent.
-It MUST be externally reproducible by other compliant implementations operating
-on the same canonical inputs.
+A compliant implementation MUST be externally reproducible by other compliant
+implementations operating on the same canonical inputs.
 
 This requirement applies to:
 
@@ -275,17 +274,17 @@ following occur:
 
 ---
 
-## Non-Goals
+## Boundary
 
 Canonical encoding does not:
 
-- Determine whether a transition should pass semantic or domain-specific gates.
+- Determine whether a transition passes semantic or domain-specific gates.
 - Replace gate profile evaluation.
 - Replace commit authority semantics.
 - Replace execution gate enforcement.
 
-It provides the stable representational substrate on which those mechanisms
-depend.
+Canonical encoding provides the deterministic representational substrate
+required by validation, commit, and verification.
 
 ---
 

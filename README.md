@@ -1,137 +1,128 @@
 # Polaris
 
-**Polaris is a protocol that ensures system actions can only occur as consequences of validated canonical state transitions.**
-
-Polaris introduces a deterministic control layer for computing systems where actions cannot occur unless they are derived from validated, committed canonical state. Instead of relying on logs, audits, or after-the-fact policy evaluation, Polaris enforces causal integrity structurally.
-
-In a Polaris system, execution is not trusted because it was recorded. Execution is trusted because it can only occur as a consequence of canonical state progression.
-
----
-
-## The Problem
-
-AI agents act. They call APIs, modify infrastructure, move funds, trigger workflows, and interact with real-world systems.
-
-Today there is no structural guarantee that those actions emerged from validated, authorized system state. Actions may occur from speculative or superseded state. Logs can be rewritten. State can be mutated outside controlled pathways. Execution may occur before correctness is established.
-
-There is no widely adopted protocol that ensures otherwise.
-
----
-
-## Core Principle
-
 Polaris enforces a single invariant:
 
-```
-No side effect may occur except as a consequence of a validated, committed canonical state transition.
-```
+Side effects cannot occur except as a consequence of a validated, committed canonical state transition.
 
-Every action in a Polaris system must follow this progression:
+Execution authority is structurally bound to canonical state — enforced by construction, not policy.
 
-```
+
+## Problem
+
+Distributed systems execute actions based on system state, yet few architectures guarantee that those actions originate from validated causal history.
+
+Execution may occur from speculative or superseded state. State may advance through multiple control paths. Logs may appear correct while the causal chain between state, decision, and execution is not enforced.
+
+Most systems cannot prove that execution originates from canonical state.
+
+
+## Model
+
+Polaris introduces commit-gated causality.
+
+Execution is permitted only from canonical state established through validated commit progression.
+
+Execution rights are granted by canonical state identity, not by policy or recording.
+
+
+## Execution Flow
+
+Every action follows a deterministic progression:
+
 Proposed Transition (PSTO)
-        |
-        v
+↓
 Validation Pipeline
-        |
-        v
+↓
 Commit Authority
-        |
-        v
+↓
 Canonical State Pointer
-        |
-        v
+↓
 Execution Gate
-        |
-        v
+↓
 Side Effects
-```
 
-A transition must pass validation before it can be committed. A commit must advance the canonical state pointer. Execution requests must reference the canonical pointer at evaluation time. If any step fails, the action is rejected before execution occurs.
+If any step fails, execution does not occur.
 
----
 
 ## What Polaris Is
 
-Polaris functions as a deterministic control plane for state mutation and execution.
+Polaris is a constraint system over execution.
 
 It enforces:
 
-- Deterministic state progression
-- Canonical state authority
-- Validation before mutation
-- Execution bound to canonical state
-- Deterministic replay and verification
+- deterministic state progression
+- canonical state authority
+- validation before commitment
+- execution bound to canonical state
+- deterministic replay and verification
 
-These properties allow system behavior to be verified from canonical state history rather than inferred from logs.
+Correctness is derived from structure, not from trusted execution.
 
----
 
 ## Non-Goals
 
 Polaris is intentionally narrow in scope.
 
-**Not a blockchain.** Polaris does not implement a decentralized ledger, token system, or consensus network. It maintains canonical state progression to enforce execution causality, not global consensus.
+Not a blockchain
+Does not implement consensus, tokens, or a decentralized ledger.
 
-**Not a logging system.** Logs record events after they occur. Polaris ensures events cannot occur unless they originate from validated canonical state.
+Not a logging system
+Logs record events. Polaris constrains whether events can occur.
 
-**Not a workflow engine.** Polaris does not orchestrate business workflows. It enforces the conditions under which authoritative state transitions and execution may occur.
+Not a workflow engine
+Does not orchestrate business logic or process flows.
 
-**Not a policy engine.** Polaris does not evaluate arbitrary runtime policy. It enforces deterministic validation gates bound to canonical state transitions.
+Not a policy engine
+Does not evaluate arbitrary runtime policy.
 
-**Not a runtime framework.** This repository defines the protocol specification, not a runtime implementation. Implementations may vary in language or architecture provided they preserve the normative invariants.
+Not a runtime framework
+This repository defines the specification, not an implementation.
 
----
 
-## Repository Structure
+## Specification
+
+The protocol is defined normatively in `spec/`.
 
 ```
 spec/
-├── canonical_encoding.md
 ├── invariants.md
+├── canonical_encoding.md
 ├── execution_graph.md
 ├── verification_model.md
 └── schemas/
     └── event.schema.json
 ```
 
-| File | Purpose |
-|---|---|
-| `canonical_encoding.md` | Deterministic encoding rules for transitions |
-| `invariants.md` | Architectural invariants all implementations must preserve |
-| `execution_graph.md` | Authoritative state progression and execution gating |
-| `verification_model.md` | Deterministic replay and independent verification |
-| `event.schema.json` | Machine-readable schema for protocol events |
+Implementations must preserve the invariants and encoding rules defined in these documents.
 
----
 
-## Protocol Status
+## Status
 
-**Version:** 1.0.0
-**Status:** Initial normative release
+Version: 1.0.0
+Status: Initial normative release
 
-The documents in `spec/` are normative. Field names, encoding rules, invariant definitions, and verification procedures defined in these files form the canonical Polaris protocol specification.
+The specification is the reference.
 
-Changes to normative behavior require a version increment.
+Implementations are invited.
 
----
 
 ## Where to Start
 
-1. `spec/invariants.md`
-2. `spec/canonical_encoding.md`
-3. `spec/execution_graph.md`
-4. `spec/verification_model.md`
-5. `spec/schemas/event.schema.json`
+- `spec/invariants.md`
+- `spec/canonical_encoding.md`
+- `spec/execution_graph.md`
+- `spec/verification_model.md`
+- `spec/schemas/event.schema.json`
 
----
 
 ## Security
 
-Security vulnerabilities or specification ambiguities should be reported according to `SECURITY.md`.
+Security issues or specification ambiguities should be reported according to `SECURITY.md`.
 
----
 
 ## License
 
 MIT — see `LICENSE`.
+
+
+Pat.: https://polaris-protocol.org/patents

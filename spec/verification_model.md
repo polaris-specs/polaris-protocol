@@ -8,13 +8,12 @@
 
 ## Purpose
 
-The Polaris verification model defines the unified protocol by which a
-compliant implementation verifies the integrity, authenticity, and causal
-validity of events, transitions, and canonical state progressions.
+The verification model defines how a compliant implementation proves the
+integrity, authenticity, and causal validity of events, transitions, and
+canonical state progressions.
 
-Verification is not a post-hoc audit mechanism. It is a structural component
-of the Polaris enforcement boundary. No transition MAY become authoritative
-without satisfying the verification conditions defined in this document.
+No transition MAY become authoritative without satisfying the verification
+conditions defined in this document.
 
 ---
 
@@ -26,10 +25,10 @@ described in RFC 2119.
 
 ---
 
-## Architectural Role
+## Verification Levels
 
-The verification model operates at three levels, each of which MUST be
-satisfied independently and in order:
+Verification operates at three levels, each of which MUST be satisfied
+independently and in order:
 
 1. **Canonical Integrity** — the event is well-formed and its `event_id`
    is correct.
@@ -43,12 +42,12 @@ one level does not compensate for failure at another.
 
 ---
 
-## Level 1: Canonical Integrity Verification
+## Level 1: Canonical Integrity
 
-### 1.1 Purpose
+### 1.1 Constraint
 
-Canonical integrity verification confirms that the event can be canonically
-encoded and that its `event_id` matches the derived hash of that encoding.
+An event MUST be canonically encodable and its `event_id` MUST match the
+hash derived from that encoding.
 
 ### 1.2 Procedure
 
@@ -78,12 +77,12 @@ Canonical integrity verification MUST fail if:
 
 ---
 
-## Level 2: Signature Authenticity Verification
+## Level 2: Signature Authenticity
 
-### 2.1 Purpose
+### 2.1 Constraint
 
-Signature authenticity verification confirms that `authority_signature` is a
-valid attestation over the canonical encoding by the declared signer.
+`authority_signature` MUST be a valid attestation over the canonical encoding
+by the declared signer.
 
 ### 2.2 Procedure
 
@@ -121,18 +120,18 @@ Signature authenticity verification MUST fail if:
 - The signature does not verify against the canonical byte sequence.
 - `authority_signature.signer` cannot be resolved to a verification key.
 
-Implementations MUST NOT fall back to a weaker algorithm if the declared
-`signature_scheme` fails. There is no algorithm fallback.
+There is no algorithm fallback. Implementations MUST NOT fall back to a
+weaker algorithm if the declared `signature_scheme` fails.
 
 ---
 
-## Level 3: Causal Validity Verification
+## Level 3: Causal Validity
 
-### 3.1 Purpose
+### 3.1 Constraint
 
-Causal validity verification confirms that the event's position in canonical
-state progression is consistent with the Canonical Progression Uniqueness and
-Canonical Pointer Authority invariants defined in `spec/invariants.md`.
+The event's position in canonical state progression MUST be consistent with
+the Canonical Progression Uniqueness and Canonical Pointer Authority
+invariants defined in `spec/invariants.md`.
 
 ### 3.2 Procedure
 
@@ -234,9 +233,9 @@ failed events and continue verifying downstream events as if they were valid.
 
 ---
 
-## Verification and the Enforcement Boundary
+## Enforcement Boundary
 
-Verification is part of the Polaris enforcement boundary as defined in
+Verification is part of the enforcement boundary as defined in
 `spec/invariants.md` (Invariant 8: Non-Bypassable Enforcement Boundary).
 
 A Polaris implementation MUST NOT:
@@ -249,8 +248,7 @@ A Polaris implementation MUST NOT:
 
 Verification results produced outside the enforcement boundary — including
 results produced by external systems, cached results, or results carried
-in non-verified metadata — MUST NOT be used as a substitute for independent
-verification.
+in non-verified metadata — MUST NOT substitute for independent verification.
 
 ---
 
