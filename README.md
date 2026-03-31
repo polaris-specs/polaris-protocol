@@ -1,119 +1,105 @@
-# Polaris
+# Polaris Protocol
 
 Polaris enforces a single invariant:
 
-Side effects cannot occur except as a consequence of a validated, committed canonical state transition.
+> No side effect may occur unless it is the result of a committed,
+> validated transition — and that fact must be independently verifiable.
 
-Execution authority is structurally bound to canonical state — enforced by construction, not policy.
+Execution authority is structurally bound to canonical state.
+Enforced by construction, not policy.
+
+---
 
 ## Problem
 
-Distributed systems execute actions based on system state, yet few architectures guarantee that those actions originate from validated causal history.
+Distributed systems execute actions based on system state, yet no
+widely deployed architecture structurally guarantees that those actions
+originate from validated causal history.
 
-Execution may occur from speculative or superseded state. State may advance through multiple control paths. Logs may appear correct while the causal chain between state, decision, and execution is not enforced.
+Execution may occur from speculative or superseded state. State may
+advance through multiple control paths. Logs may appear correct while
+the causal chain between state, decision, and execution is not enforced.
 
 Most systems cannot prove that execution originates from canonical state.
+
+---
 
 ## Model
 
 Polaris introduces commit-gated causality.
 
-Execution is permitted only from canonical state established through validated commit progression.
-
-Execution rights are granted by canonical state identity, not by policy or recording.
-
-## Execution Flow
-
 Every action follows a deterministic progression:
-
-```text
-Proposed Transition (PSTO)
-        ↓
-Validation Pipeline
-        ↓
+Proposed Transition
+↓
+Validator
+↓
 Commit Authority
-        ↓
-Canonical State Pointer
-        ↓
+↓
+Canonical State
+↓
 Execution Gate
-        ↓
+↓
 Side Effects
-```
 
 If any step fails, execution does not occur.
+No bypass path exists in a conformant implementation.
 
-## What Polaris Is
+---
 
-Polaris is a constraint system over execution.
+## What Polaris Is Not
 
-It enforces:
+**Not a blockchain.**
+Does not implement consensus among mutually distrusting parties.
+Assumes a designated commit authority.
 
-- deterministic state progression
-- canonical state authority
-- validation before commitment
-- execution bound to canonical state
-- deterministic replay and verification
+**Not an audit log.**
+Logs record what happened. Polaris structurally prevents unauthorized
+execution before it occurs.
 
-Correctness is derived from structure, not from trusted execution.
-
-## Non-Goals
-
-Polaris is intentionally narrow in scope.
-
-**Not a blockchain**
-Does not implement consensus, tokens, or a decentralized ledger.
-
-**Not a logging system**
-Logs record events. Polaris constrains whether events can occur.
-
-**Not a workflow engine**
+**Not a workflow engine.**
 Does not orchestrate business logic or process flows.
 
-**Not a policy engine**
+**Not a policy engine.**
 Does not evaluate arbitrary runtime policy.
 
-**Not a runtime framework**
+**Not a runtime framework.**
 This repository defines the specification, not an implementation.
+
+---
 
 ## Specification
 
-The protocol is defined normatively in `spec/`.
+| Document | Purpose |
+|---|---|
+| `SPEC.md` | Complete normative specification v1.0 |
+| `KNOWN-GAPS.md` | Acknowledged limitations deferred to v1.1 |
+| `REFERENCE-HASHES.md` | Canonical reference hash values for implementers |
 
-```text
-spec/
-├── invariants.md
-├── canonical_encoding.md
-├── execution_graph.md
-├── verification_model.md
-└── schemas/
-    └── event.schema.json
-```
-
-Implementations must preserve the invariants and encoding rules defined in these documents.
-
-## Status
-
-Version: 1.0.0
-Status: Initial normative release
-
-The specification is the reference.
-
-Implementations are invited.
+---
 
 ## Where to Start
 
-- `spec/invariants.md`
-- `spec/canonical_encoding.md`
-- `spec/execution_graph.md`
-- `spec/verification_model.md`
-- `spec/schemas/event.schema.json`
+**Implementing Polaris:**
+Read `SPEC.md` Section A (Overview), then Section G (Transition Object),
+then the section relevant to the component you are building.
 
-## Security
+**Verifying conformance:**
+Read `SPEC.md` Section K for the self-declaration checklist
+and PCIS-1 test specification.
 
-Security issues or specification ambiguities should be reported according to `SECURITY.md`.
+**Understanding what Polaris guarantees:**
+Read `SPEC.md` Section J (Threat Model).
 
-## License
+**Checking your serialization:**
+See `REFERENCE-HASHES.md` for canonical reference hash values.
 
-MIT — see `LICENSE`.
+---
 
-Pat.: https://polaris-protocol.org/patents
+## Status
+Version:    1.0
+License:    Specification — CC-BY-4.0
+Reference implementations — Apache 2.0
+Conformance: Self-declared (Level 1). PCIS-1 suite in development.
+
+Implementations are invited.
+Questions and errata: open an issue tagged [conformance] or [errata].
