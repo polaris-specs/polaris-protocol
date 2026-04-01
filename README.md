@@ -29,17 +29,20 @@ Most systems cannot prove that execution originates from canonical state.
 Polaris introduces commit-gated causality.
 
 Every action follows a deterministic progression:
+
+```
 Proposed Transition
-↓
+        ↓
 Validator
-↓
+        ↓
 Commit Authority
-↓
+        ↓
 Canonical State
-↓
+        ↓
 Execution Gate
-↓
+        ↓
 Side Effects
+```
 
 If any step fails, execution does not occur.
 No bypass path exists in a conformant implementation.
@@ -96,10 +99,13 @@ See `REFERENCE-HASHES.md` for canonical reference hash values.
 ---
 
 ## Status
+
+```
 Version:    1.0
 License:    Specification — CC-BY-4.0
-Reference implementations — Apache 2.0
+            Reference implementations — Apache 2.0
 Conformance: Self-declared (Level 1). PCIS-1 suite in development.
+```
 
 Implementations are invited.
 Questions and errata: open an issue tagged [conformance] or [errata].
