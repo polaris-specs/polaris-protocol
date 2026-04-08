@@ -42,6 +42,8 @@ The Polaris invariant. Everything else in this specification follows from it.
 
 Everything in this specification is a consequence of this invariant. If you understand it, you understand Polaris. If an implementation satisfies it — precisely, verifiably, without exception — it is Polaris. If it does not, it is not.
 
+For a minimal path to first implementation, see [QUICKSTART.md](./QUICKSTART.md).
+
 ### P.2 — What Polaris Is
 
 Polaris is a protocol for commit-gated execution.
