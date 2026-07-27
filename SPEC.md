@@ -228,11 +228,11 @@ See Section C.15 for role separation requirements.
 
 The following invariants MUST hold for any conformant implementation:
 
-1. **Commit-Gated Execution** Execution MUST NOT occur without a committed transition.
+1. <a name="commit-gated-execution"></a>**Commit-Gated Execution** Execution MUST NOT occur without a committed transition.
 2. **Single Canonical Progression (per domain)** At most one successor MAY advance a given canonical state.
 3. **Deterministic Validation** Identical inputs MUST yield identical validation verdicts.
 4. **Canonical Serialization** State and commit payloads MUST be encoded deterministically.
-5. **Causal Binding** Every side effect MUST reference a committed transition.
+5. <a name="causal-binding"></a>**Causal Binding** Every side effect MUST reference a committed transition.
 6. **Progression Integrity** The canonical progression MUST be verifiably contiguous. Gaps in sequence_number or breaks in the prev_state_hash chain MUST be detectable by any verifier with access to the canonical progression.
 
 ### A.5 Scope
